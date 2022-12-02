@@ -11,4 +11,4 @@ build:
 install: build
 	@echo installing...
 	@mkdir -p ${PREFIX}/bin
-	@cp ${OUT} ${PREFIX}/bin
+	@mv ${OUT} ${PREFIX}/bin
