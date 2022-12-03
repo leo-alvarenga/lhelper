@@ -9,7 +9,7 @@ All rights reserved.
 
 #ifndef CONFIG_H
 
-#include "lhelper.h"
+#include "lstatus.h"
 
 /* Customizable variables: change these accordding to your needs */
 static const bool has_battery     = true;

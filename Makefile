@@ -6,7 +6,7 @@ clean:
 
 build:
 	@echo building...
-	@cc ${SRC} -o ${OUT} ${CFLAGS}
+	${CC} ${SRC} -o ${OUT} ${CFLAGS}
 
 install: build
 	@echo installing...

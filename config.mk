@@ -1,7 +1,7 @@
-NAME = lhelper
+NAME = lstatus
 
-SRC = lhelper.c main.c
-OUT = lhelper
+SRC = lstatus.c main.c
+OUT = lstatus
 
 PREFIX = /usr/local
 

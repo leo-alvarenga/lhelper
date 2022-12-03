@@ -7,7 +7,7 @@ All rights reserved.
 
 */
 
-#ifndef LHERLPER
+#ifndef LSTATUS
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,4 +51,4 @@ BatteryInfo* get_battery_info();
 Uptime* get_uptime();
 LoadAvg* get_loadavg();
 
-#endif // LHELPER
+#endif // LSTATUS
