@@ -28,6 +28,10 @@ typedef struct {
 } BatteryInfo;
 
 typedef struct {
+    int days, hrs, min, s;
+} Uptime;
+
+typedef struct {
     float one_min;
     float five_min;
     float fifteen_min;
@@ -36,12 +40,15 @@ typedef struct {
 } LoadAvg;
 
 typedef struct {
-    char *kernel;
-    int uptime;
-} SysInfo;
+    const char *name;
+    const char *spacer;
+    const char *prefix;
+    const char *suffix[4];
+} Module;
 
 char* join_path(const char *base, const char *dir);
 BatteryInfo* get_battery_info();
+Uptime* get_uptime();
 LoadAvg* get_loadavg();
 
 #endif // LHELPER

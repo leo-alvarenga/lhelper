@@ -66,6 +66,33 @@ BatteryInfo* get_battery_info() {
     return bat;
 }
 
+Uptime* get_uptime() {
+    Uptime *up = (Uptime *)(malloc(sizeof(Uptime)));
+    
+    int time, _;
+    FILE *f = fopen(uptime_path, "r");
+
+    fscanf(f, "%d %d", &time, &_);
+    fclose(f);
+
+    up->hrs = time / 3600;
+	time = time % 3600;
+
+	up->min = time / 60;
+	time = time % 60;
+
+    up->s = time;
+
+	if (up->hrs > 24){
+		up->days = up->hrs / 24;
+		up->hrs = up->hrs % 24;
+	} else {
+        up->days = 0;
+    }
+
+    return up;
+}
+
 LoadAvg* get_loadavg() {
     LoadAvg *avg = (LoadAvg*)(malloc(sizeof(LoadAvg)));
     if (avg == NULL) return NULL;
