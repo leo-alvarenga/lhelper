@@ -16,8 +16,9 @@ bool contains(const char *a, const char *b);
 
 /* module handlers */
 char *battery_module(const Module mod, const BatteryInfo *bat);
-char *uptime_module(const Module mod, Uptime *uptime);
+char *uptime_module(const Module mod, UptimeInfo *uptime);
 char *loadavg_module(const Module mod, LoadAvg *load);
+char *backlight_module(const Module mod, BacklightInfo *back);
 char** retrieve_all();
 
 int main(int argc, char *argv[]) {
@@ -33,6 +34,8 @@ int main(int argc, char *argv[]) {
         if (i < m_count - 1)
             printf("%s", separator);
     }
+
+    printf("\n");
 
     return 0;
 }
@@ -54,18 +57,17 @@ char** retrieve_all() {
     }
     
     BatteryInfo *bat = NULL;
-    Uptime *uptime = NULL;
+    UptimeInfo *uptime = NULL;
     LoadAvg *load = NULL;
+    BacklightInfo *back = NULL;
     
-    short which_suffix;
     char *value;
     Module cur;
     for (int i = 0; i < m_count; ++i) {
         cur = modules[i];
-        which_suffix = 0;
 
         /* value is a variable used as shorthand to the formatted data */
-        value = (char *)(malloc(sizeof(char) * 16));
+        value = (char *)(malloc(sizeof(char) * 26));
         
         if (contains(cur.name, "battery")) {
             if (bat == NULL) bat = get_battery_info();
@@ -84,6 +86,13 @@ char** retrieve_all() {
             if (load == NULL) continue;
 
             value = loadavg_module(cur, load);
+        } else if (contains(cur.name, "backlight")) {
+            if (back == NULL) back = get_backlight_info();
+            if (back == NULL) continue;
+
+            value = backlight_module(cur, back);
+        } else if (contains(cur.name, "time")) {
+            sprintf(value, "%s%s%s%s%s", cur.spacer, cur.prefix, get_local_time(localtime_fmt, tz_name), cur.suffix[0], cur.spacer);
         }
 
         if (value != NULL) {
@@ -152,7 +161,7 @@ char *battery_module(const Module mod, const BatteryInfo *bat) {
     return out;
 }
 
-char *uptime_module(const Module mod, Uptime *uptime) {
+char *uptime_module(const Module mod, UptimeInfo *uptime) {
     char *value = (char *)(malloc(sizeof(char) * 16));
     char *out = (char *)(malloc(sizeof(char) * 50));
     if (value == NULL || out == NULL) return NULL;  
@@ -223,6 +232,32 @@ char *loadavg_module(const Module mod, LoadAvg *load) {
         sprintf(value, "%s", load->entities);
     } else if (contains(mod.name, "pid")) {
         sprintf(value, "%d", load->newest_proc);
+    } else {
+        free(value);
+        value = NULL;
+    }
+
+    if (value != NULL) {
+        sprintf(out, "%s%s%s%s%s", mod.spacer, mod.prefix, value, mod.suffix[0], mod.spacer);
+        free(value);
+    }
+
+    return out;
+}
+
+char *backlight_module(const Module mod, BacklightInfo *back) {
+    char *value = (char *)(malloc(sizeof(char) * 8));
+    char *out = (char *)(malloc(sizeof(char) * 10));
+    if (value == NULL || out == NULL) return NULL;  
+
+    if (contains(mod.name, "percentage")) {
+        sprintf(value, "%d", back->brightness_rate);
+    } else if (contains(mod.name, "ratio")) {
+        sprintf(value, "%d/%d", back->brightness, back->max_brightness);
+    } else if (contains(mod.name, "brightness")) {
+        sprintf(value, "%d", back->brightness);
+    } else if (contains(mod.name, "max")) {
+        sprintf(value, "%d", back->max_brightness);
     } else {
         free(value);
         value = NULL;

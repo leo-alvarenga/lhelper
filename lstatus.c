@@ -20,6 +20,29 @@ char* join_path(const char *base, const char *dir) {
     return dest;
 }
 
+char* get_local_time(const char *fmt, const char *tz) {
+    char buf[135];
+    
+    char *out = (char *)(malloc(sizeof(char)*135));
+
+    setenv("TZ", tz, 1);
+    
+    time_t tim;
+    struct tm *timtm;
+    tim = time(NULL);
+    timtm = localtime(&tim);
+
+    if (timtm == NULL)
+        return "";
+
+    if (!strftime(buf, sizeof(buf)-1, fmt, timtm)) {
+        return "?";
+    }
+  
+  sprintf(out,"%s", buf);
+  return out;
+}
+
 BatteryInfo* get_battery_info() {
     if (!has_battery) return NULL;
 
@@ -66,8 +89,8 @@ BatteryInfo* get_battery_info() {
     return bat;
 }
 
-Uptime* get_uptime() {
-    Uptime *up = (Uptime *)(malloc(sizeof(Uptime)));
+UptimeInfo* get_uptime() {
+    UptimeInfo *up = (UptimeInfo *)(malloc(sizeof(UptimeInfo)));
     
     int time, _;
     FILE *f = fopen(uptime_path, "r");
@@ -116,3 +139,28 @@ LoadAvg* get_loadavg() {
 
     return avg;
 }
+
+BacklightInfo* get_backlight_info() {
+    const char *bright = join_path(backlight_path, "brightness");
+    const char *max = join_path(backlight_path, "max_brightness");
+    if (max == NULL || bright == NULL) return NULL;
+
+    BacklightInfo *back = (BacklightInfo *)(malloc(sizeof(BacklightInfo)));
+    FILE *f;
+
+    f = fopen(bright, "r");
+    if (f == NULL) return NULL;
+
+    fscanf(f, "%d", &(back->brightness));
+    fclose(f);
+
+    f = fopen(max, "r");
+    if (f == NULL) return NULL;
+
+    fscanf(f, "%d", &(back->max_brightness));
+    fclose(f);
+
+    back->brightness_rate = (back->brightness * 100) / back->max_brightness;
+
+    return back;
+};

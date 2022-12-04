@@ -13,6 +13,7 @@ All rights reserved.
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 typedef struct {
     char prefix;
@@ -29,7 +30,7 @@ typedef struct {
 
 typedef struct {
     int days, hrs, min, s;
-} Uptime;
+} UptimeInfo;
 
 typedef struct {
     float one_min;
@@ -40,6 +41,26 @@ typedef struct {
 } LoadAvg;
 
 typedef struct {
+    int brightness;
+    int max_brightness;
+    int brightness_rate;
+} BacklightInfo;
+
+typedef struct {
+    int used_rate;
+    int free_rate;
+    int swp_used_rate;
+    int swp_free_rate;
+    int used;
+    int cach;
+    int shrd;
+    int free;
+    int swp_used;
+    int swp_free;
+} MemInfo;
+
+typedef struct {
+    int interval_multiplier;
     const char *name;
     const char *spacer;
     const char *prefix;
@@ -47,8 +68,11 @@ typedef struct {
 } Module;
 
 char* join_path(const char *base, const char *dir);
+char* get_local_time(const char *fmt, const char *tz);
 BatteryInfo* get_battery_info();
-Uptime* get_uptime();
+UptimeInfo* get_uptime();
 LoadAvg* get_loadavg();
+BacklightInfo* get_backlight_info();
+MemInfo* get_meminfo();
 
 #endif // LSTATUS
