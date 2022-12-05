@@ -60,7 +60,6 @@ typedef struct {
 } MemInfo;
 
 typedef struct {
-    int interval_multiplier;
     const char *name;
     const char *spacer;
     const char *prefix;

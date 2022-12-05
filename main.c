@@ -8,8 +8,16 @@ All rights reserved.
 */
 
 #include "config.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <X11/Xlib.h>
+
+/* status global */
+char *status = NULL;
 
 void help();
+
+void xsetroot_name(char *str, Display *dpy);
 
 /* helpers */
 bool contains(const char *a, const char *b);
@@ -19,23 +27,37 @@ char *battery_module(const Module mod, const BatteryInfo *bat);
 char *uptime_module(const Module mod, UptimeInfo *uptime);
 char *loadavg_module(const Module mod, LoadAvg *load);
 char *backlight_module(const Module mod, BacklightInfo *back);
-char** retrieve_all();
+char* retrieve_all();
 
 int main(int argc, char *argv[]) {
+    bool use_stdout = !use_setxroot;
+    
     if (argc > 1) {
-        help();
+        if (strcmp(argv[1], "--output") != 0) {
+            help();
+            return 0;
+        }
+
+        use_stdout = true;
+    }
+
+    status = retrieve_all();
+
+    Display *dpy = XOpenDisplay(NULL);
+    if (dpy == NULL) {
+		fprintf(stderr, "lstatus could not proceed; cannot open display \n");
+		return 1;
+	}
+
+    if (use_stdout) {
+        printf("%s\n", status);
         return 0;
     }
 
-    char **data = retrieve_all();
-    for (int i = 0; i < m_count; ++i) {
-        printf("%s", data[i]);
-
-        if (i < m_count - 1)
-            printf("%s", separator);
+    for (;; sleep(base_interval)) {
+        xsetroot_name(status, dpy);
+        retrieve_all();
     }
-
-    printf("\n");
 
     return 0;
 }
@@ -44,18 +66,16 @@ void help() {
     printf("Help screen....\n");
 }
 
+void xsetroot_name(char *str, Display *dpy) {
+    XStoreName(dpy, DefaultRootWindow(dpy), str);
+	XSync(dpy, False);
+}
+
 bool contains(const char *a, const char *b) {
     return strstr(a, b) != NULL;
 }
 
-char** retrieve_all() {
-    char **out;
-    out = (char **)(malloc(sizeof(char *) * m_count));
-
-    for (int i = 0; i < m_count; ++i) {
-        out[i] = (char *)(malloc(sizeof(char) * 5));
-    }
-    
+char* retrieve_all() {    
     BatteryInfo *bat = NULL;
     UptimeInfo *uptime = NULL;
     LoadAvg *load = NULL;
@@ -63,6 +83,14 @@ char** retrieve_all() {
     
     char *value;
     Module cur;
+
+    if (status != NULL) free(status);
+
+    status = (char *)(malloc(sizeof(char) * 256));
+    if (status == NULL) return NULL;
+
+    strcpy(status, "");
+
     for (int i = 0; i < m_count; ++i) {
         cur = modules[i];
 
@@ -70,7 +98,9 @@ char** retrieve_all() {
         value = (char *)(malloc(sizeof(char) * 26));
         
         if (contains(cur.name, "battery")) {
-            if (bat == NULL) bat = get_battery_info();
+            if (bat != NULL) free(bat);
+            
+            bat = get_battery_info();
             if (bat == NULL) continue;
 
             value = battery_module(cur, bat);
@@ -82,7 +112,9 @@ char** retrieve_all() {
 
             value = uptime_module(cur, uptime);
         } else if (contains(cur.name, "loadavg")) {
-            if (load == NULL) load = get_loadavg();
+            if (load != NULL) free(load);
+            
+            load = get_loadavg();
             if (load == NULL) continue;
 
             value = loadavg_module(cur, load);
@@ -96,14 +128,19 @@ char** retrieve_all() {
         }
 
         if (value != NULL) {
-            strcpy(out[i], value);
+            strcat(status, value);
             free(value);
+
+            if (i < m_count - 1) strcat(status, separator);
         }
     }
 
     if (bat != NULL) free(bat);
+    if (uptime != NULL) free(uptime);
+    if (load != NULL) free(load);
+    if (back != NULL) free(back);
 
-    return out;
+    return status;
 }
 
 char *battery_module(const Module mod, const BatteryInfo *bat) {

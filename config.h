@@ -34,7 +34,26 @@ static const char *sec_suffix = "s";
 static const char *separator = "|";
 
 /* Module count; Change according to the modules array length */
-static const short int m_count = 6;
+static const unsigned short int m_count = 6;
+
+/* 
+    enable the usage xlib to set the xroot name; this way, 
+    external scripts are not needed when using lstatus alongside dwm
+
+    if you are not interested in using it with dwm:
+        - set this to false
+        - remove the xsetroot_name function implementation and calls
+        - remove the inclusion of xlib in main.c
+        - in the Makefile, alter CFLAGSX and LDFLAGSX to CFLAGS and LDFLAGS 
+            respectvely
+*/
+static const bool use_setxroot = true;
+
+/* 
+    the update rate; each base_interval seconds, the status will be updated;
+    this value is the amount of time that should be waited before refreshing
+*/
+static const unsigned short int base_interval = 1;
 
 /*
     Syntax: module_name:value
@@ -77,12 +96,13 @@ static const short int m_count = 6;
 */
 
 static const Module modules[] = {
-    { 1, "battery:percentage+", " ",  "", "%", "%+", "%!", "%?" },
-    { 1, "battery:health", " ",  "", "%" },
-    { 1, "battery:status", " ", "", "-", "+", "", "?" },
-    { 1, "backlight:percentage", " ", "", "%" },
-    { 1, "uptime:hms", " ",  "", "" },
-    { 1, "time", " ",  "TIME: ", "" },
+    /* module | spacer | prefix | suffix[0] | suffix[1] | suffix[2] | suffix[3] */
+    { "battery:percentage+",  " ",  "", 	 "%", "%+", "%!", "%?" },
+    { "battery:health", 	 " ",  "", 	 "%" },
+    { "battery:status", 	 " ",  "", 	 "-", "+", "", "?" },
+    { "backlight:percentage", " ",  "", 	 "%" },
+    { "uptime:hms", 		 " ",  "", 	 "" },
+    { "time",		 " ",  "TIME: ", "" },
     /* Example:
         { "loadavg:pid", "  ",  "ID: (", ")" }
     */
