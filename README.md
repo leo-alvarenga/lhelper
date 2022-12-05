@@ -27,11 +27,14 @@ This is the default behavior for _lstatus_, requiring X11 libs to function prope
 
 When using _lstatus_ alongside _dwm_, its output will be inserted as X's root name, so that _dwm_ bar is able to display it.
 
+![result1](assets/result1.png)
+
+You can even add an icon font to your _dwm_ config to use icons on your _lstatus_ config:
+![result2](assets/result2.png)
+
 If, for some reason, you want see its output for yourself in your shell while using _lstatus_ this way, simply invoke it with `lstatus --output`.
 
-#### End result:
-
-![result1](assets/result1.png)
+![output_mode](assets/result3.png)
 
 ### Using _lstatus_'s output directly
 
@@ -40,8 +43,8 @@ If you don't use _dwm_ or don't want to use _lstatus_ alongside it there is abso
 Furthermore, if that is your case, you can go even further an remove **all** X11 related logic from _lstatus_. To do that:
 1. Remove the `xsetroot_name` function implementation and calls from the `main.c` file
 2. Remove the inclusion of `X11/Xlib` from the `main.c` file
-3. In the Makefile, alter CFLAGSX and LDFLAGSX to CFLAGS and LDFLAGS 
-    respectvely
+3. In the Makefile, alter `CFLAGSX` and `LDFLAGSX` to `CFLAGS` and `LDFLAGS` 
+    respectively
 
 #### Example: Using its output
 
@@ -61,3 +64,15 @@ done
 # to run it as a seperate process
 
 ```
+
+## Performance
+
+Even with a refresh rate rate of one (1) second and `use_setxroot` set to `true`, _lstatus_ does not bear any signaficant impact to your machine's performance:
+
+![performance1](assets/lstatus_perf.png)
+
+## To do
+- [ ] Implement a memory info module (ram & swap)
+- [ ] (Maybe) Implement a temperature module
+- [ ] Document custom module implementation
+- [ ] Rework the documentation
