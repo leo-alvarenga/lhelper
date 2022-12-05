@@ -15,7 +15,12 @@ Seriouly though, I had the idea to build this when, while tinkering with `dwmsta
 
 ## Installation
 
-Clone this repo, customize it and install it with `sudo make install`. Future installations should be done with `sudo make clean install`.
+1. Clone this repo
+2. Customize _lstatus_ to your liking
+3. Install it with `sudo make install`
+
+- Future installations should be done with `sudo make clean install`;
+- To uninstall _lstatus_, run `sudo make clean` and delete your local repo
 
 ## Usage
 
@@ -32,7 +37,7 @@ When using _lstatus_ alongside _dwm_, its output will be inserted as X's root na
 You can even add an icon font to your _dwm_ config to use icons on your _lstatus_ config:
 ![result2](assets/result2.png)
 
-If, for some reason, you want see its output for yourself in your shell while using _lstatus_ this way, simply invoke it with `lstatus --output`.
+If you want see _lstatus_'s output in your shell while using _lstatus_ this way, simply invoke it with `lstatus --output`.
 
 ![output_mode](assets/result3.png)
 
@@ -67,7 +72,7 @@ done
 
 ## Performance
 
-Even with a refresh rate rate of one (1) second and `use_setxroot` set to `true`, _lstatus_ does not bear any signaficant impact to your machine's performance:
+Even with a refresh rate of one (1) second and `use_setxroot` set to `true`, _lstatus_ does not bear any significant impact on your machine's performance:
 
 ![performance1](assets/lstatus_perf.png)
 
