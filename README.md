@@ -29,6 +29,9 @@ When using _lstatus_ alongside _dwm_, its output will be inserted as X's root na
 
 If, for some reason, you want see its output for yourself in your shell while using _lstatus_ this way, simply invoke it with `lstatus --output`.
 
+#### End result:
+
+![result1](assets/result1.png)
 
 ### Using _lstatus_'s output directly
 
@@ -58,7 +61,3 @@ done
 # to run it as a seperate process
 
 ```
-
-Result when executing the script:
-
-![result1](assets/result1.png)
